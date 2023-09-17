@@ -1,34 +1,38 @@
-import {useCallback, useRef, useSyncExternalStore} from 'react';
+import { useEffect, useRef } from 'react';
 
 import { addCallback } from '../core';
-import { Callback, WrappedCallback, Key } from '../types';
+import {Callback, CallbackEventType, Key} from '../types';
 
 type Props = {
   key: Key;
   callback: Callback;
   disabled?: boolean;
+  isGlobal?: boolean;
+  type?: CallbackEventType
 };
 
-export const useKeyboard = ({ key, callback, disabled = false }: Props) => {
-  const wrappedCallback = useRef<WrappedCallback>(null);
+export const useKeyboard = ({ key, callback, disabled = false, type = 'keydown', isGlobal }: Props) => {
+  const removeCallback = useRef<VoidFunction | null>(null)
 
-  console.log('render')
-  wrappedCallback.current = { callback };
+  const callbackId = useRef(crypto.randomUUID()).current
 
-
-  const subscribe = useCallback(() => {
-    if(disabled) return () => null
-    console.log('sub')
-    const removeCallback = addCallback({
-      key,
-      wrappedCallback
-    })
+  useEffect(() => {
     return () => {
-      console.log('unsub')
-      removeCallback()
+      removeCallback.current?.()
     }
-  }, [key, disabled])
+  }, []);
 
+  useEffect(() => {
 
-  useSyncExternalStore(subscribe, () => null)
+    removeCallback.current = addCallback({
+      key,
+      wrappedCallback: {
+        callback,
+        disabled,
+        id: callbackId,
+      },
+      isGlobal,
+      type
+    })
+  }, [key, disabled]);
 };

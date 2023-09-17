@@ -1,10 +1,24 @@
 import './styles/Global.sass'
-import {useState } from "react";
+import {useEffect, useState} from "react";
 import {Modal} from "@/shared/ui/Modal";
+import {useKeyboard} from "@/shared/lib/KeyboardManager";
 
 export const App = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
+  console.log('RENDER APP')
+
+  useKeyboard({
+    key: 'Ctrl+z',
+    callback: () => console.log('UNDO'),
+    type: 'keyup',
+  });
+
+  useEffect(() => {
+    console.log('USE EFFECT APP')
+
+    return () => console.log('USE EFFECT APP CLEANUP')
+  }, []);
 
   return (
     <div className={'App'}>

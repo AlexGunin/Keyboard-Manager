@@ -54,6 +54,7 @@ export const Layout = ({ onClose, children, isOpened }: layoutProps) => {
 
   useEffect(() => {
     document.body.classList.add('modalOpen')
+
     return () => {
       document.body.classList.remove('modalOpen')
     }

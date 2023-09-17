@@ -1,35 +1,49 @@
-import { getOrCreateQueue, allQueuesAreEmpty } from './queue';
-import { addEventListener, removeEventListener } from './event';
-import { WrappedCallbackRef, Queue, Key } from '../types';
+import {
+  addOrUpdateCallbackInQueue,
+  allQueuesAreEmpty,
+  deleteEventHandler,
+  getOrCreateQueue,
+  GLOBAL_QUEUE_KEY
+} from './queue';
+import {addEventListener, removeEventListener} from './event';
+import {CallbackEventType, Key, Queue, WrappedCallback} from '../types';
 
 type RemoveParams = {
   queue: Queue;
-  wrappedCallback: WrappedCallbackRef;
+  wrappedCallback: WrappedCallback;
+  type: CallbackEventType
 };
-const removeCallback = ({ queue, wrappedCallback }: RemoveParams) => {
+const removeCallback = ({ queue, wrappedCallback, type }: RemoveParams) => {
   const index = queue.findIndex(
-    (queueCallback) => queueCallback === wrappedCallback
+    (id) => id === wrappedCallback.id
   );
   if (index > -1) {
     queue.splice(index, 1);
   }
-  if (allQueuesAreEmpty()) {
-    removeEventListener();
+  if (allQueuesAreEmpty(type)) {
+    removeEventListener(type);
   }
+  deleteEventHandler(wrappedCallback.id)
   console.log('remove callback', queue)
 };
 
 type AddParams = {
   key: Key;
-  wrappedCallback: WrappedCallbackRef;
+  wrappedCallback: WrappedCallback;
+  isGlobal?: boolean;
+  type: CallbackEventType;
 };
-export const addCallback = ({ key, wrappedCallback }: AddParams) => {
-  const needAddEventListener = allQueuesAreEmpty();
-  const queue = getOrCreateQueue(key);
-  queue.push(wrappedCallback);
+
+
+export const addCallback = ({ key, wrappedCallback, isGlobal, type }: AddParams) => {
+  const needAddEventListener = allQueuesAreEmpty(type);
+  const queue = getOrCreateQueue(isGlobal ? GLOBAL_QUEUE_KEY: key, type);
+
+  addOrUpdateCallbackInQueue(queue, wrappedCallback)
+
   if (needAddEventListener) {
-    addEventListener();
+    addEventListener(type);
   }
   console.log('add callback', queue)
-  return () => removeCallback({ queue, wrappedCallback });
+  return () => removeCallback({ queue, wrappedCallback, type });
 };
