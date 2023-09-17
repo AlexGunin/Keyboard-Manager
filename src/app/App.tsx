@@ -2,6 +2,7 @@ import './styles/Global.sass'
 import {useEffect, useState} from "react";
 import {Modal} from "@/shared/ui/Modal";
 import {useKeyboard} from "@/shared/lib/KeyboardManager";
+import {eventHandlers} from "@/shared/lib/KeyboardManager/core/queue.ts";
 
 export const App = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -19,6 +20,8 @@ export const App = () => {
 
     return () => console.log('USE EFFECT APP CLEANUP')
   }, []);
+
+  console.log('HANDLERS', eventHandlers)
 
   return (
     <div className={'App'}>

@@ -23,7 +23,9 @@ const removeCallback = ({ queue, wrappedCallback, type }: RemoveParams) => {
   if (allQueuesAreEmpty(type)) {
     removeEventListener(type);
   }
+
   deleteEventHandler(wrappedCallback.id)
+
   console.log('remove callback', queue)
 };
 

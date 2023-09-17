@@ -23,7 +23,6 @@ export const useKeyboard = ({ key, callback, disabled = false, type = 'keydown',
   }, []);
 
   useEffect(() => {
-
     removeCallback.current = addCallback({
       key,
       wrappedCallback: {
@@ -34,5 +33,5 @@ export const useKeyboard = ({ key, callback, disabled = false, type = 'keydown',
       isGlobal,
       type
     })
-  }, [key, disabled]);
+  }, [key, disabled, callback]);
 };
